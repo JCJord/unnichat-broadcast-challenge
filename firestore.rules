@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for tenant authentication and ownership
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isDocOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. Connections collection (Root collection - No subcollections)
+    match /connections/{connectionId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+        
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+        
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // 2. Contacts collection (Root collection - linked via connectionId & userId)
+    match /contacts/{contactId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.connectionId is string
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() > 0;
+        
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() > 0;
+        
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // 3. Broadcasts collection (Root collection - linked via connectionId & userId)
+    match /broadcasts/{broadcastId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.connectionId is string
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.status in ['scheduled', 'sent'];
+        
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid;
+        
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
