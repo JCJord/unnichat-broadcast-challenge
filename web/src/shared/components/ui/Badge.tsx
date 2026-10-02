@@ -3,7 +3,7 @@ import Chip from '@mui/material/Chip';
 
 export type BadgeVariant = 'scheduled' | 'sent' | 'error' | 'neutral';
 
-export interface AppBadgeProps {
+export interface BadgeProps {
   variant: BadgeVariant;
   children: React.ReactNode;
   icon?: React.ReactElement;
@@ -17,7 +17,7 @@ const badgeStyles: Record<BadgeVariant, string> = {
   neutral: '!bg-slate-800 !text-slate-300 !border !border-slate-700',
 };
 
-export const AppBadge: React.FC<AppBadgeProps> = ({
+export const Badge: React.FC<BadgeProps> = ({
   variant,
   children,
   icon,

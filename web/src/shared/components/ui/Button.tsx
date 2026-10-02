@@ -1,11 +1,11 @@
 import React from 'react';
-import Button, { ButtonProps as MuiButtonProps } from '@mui/material/Button';
+import MuiButton, { ButtonProps as MuiButtonProps } from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 
 export type ButtonVariant = 'solid' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
-export interface AppButtonProps extends Omit<MuiButtonProps, 'variant' | 'size'> {
+export interface ButtonProps extends Omit<MuiButtonProps, 'variant' | 'size'> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
@@ -30,7 +30,7 @@ const sizeStyles: Record<ButtonSize, string> = {
   lg: '!px-5 !py-2.5 !text-base !rounded-lg !gap-2.5',
 };
 
-export const AppButton: React.FC<AppButtonProps> = ({
+export const Button: React.FC<ButtonProps> = ({
   variant = 'solid',
   size = 'md',
   isLoading = false,
@@ -45,7 +45,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
   const isDisabled = disabled || isLoading;
 
   return (
-    <Button
+    <MuiButton
       disabled={isDisabled}
       fullWidth={fullWidth}
       startIcon={!isLoading ? leftIcon : undefined}
@@ -67,6 +67,6 @@ export const AppButton: React.FC<AppButtonProps> = ({
       ) : (
         children
       )}
-    </Button>
+    </MuiButton>
   );
 };

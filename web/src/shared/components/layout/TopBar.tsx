@@ -4,7 +4,7 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import { Menu as MenuIcon, LogOut } from 'lucide-react';
-import { AppButton } from '../ui/AppButton';
+import { Button } from '../ui';
 
 interface TopBarProps {
   userEmail?: string | null;
@@ -21,10 +21,9 @@ export const TopBar: React.FC<TopBarProps> = ({
     <AppBar
       position="sticky"
       elevation={0}
-      className="!bg-dark-surface/90 !backdrop-blur-md !border-b !border-dark-border !text-white"
+      className="!h-16 !bg-dark-surface/90 !backdrop-blur-md !border-b !border-dark-border !text-white !box-border"
     >
-      <Toolbar className="!min-h-16 !px-4 lg:!px-8 !flex !items-center !justify-between">
-
+      <Toolbar className="!h-16 !min-h-16 !max-h-16 !px-4 lg:!px-8 !flex !items-center !justify-between !box-border">
         <div className="flex items-center gap-3">
           <IconButton
             size="small"
@@ -52,7 +51,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           )}
 
           {onLogout && (
-            <AppButton
+            <Button
               variant="ghost"
               size="sm"
               onClick={onLogout}
@@ -60,7 +59,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               className="text-xs hover:!bg-rose-500/10 hover:!text-rose-400"
             >
               <span className="hidden sm:inline">Sair</span>
-            </AppButton>
+            </Button>
           )}
         </div>
       </Toolbar>

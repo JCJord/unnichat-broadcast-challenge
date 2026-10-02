@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import { X } from 'lucide-react';
 
-export interface AppModalProps {
+export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
@@ -16,7 +16,7 @@ export interface AppModalProps {
   maxWidth?: 'xs' | 'sm' | 'md' | 'lg';
 }
 
-export const AppModal: React.FC<AppModalProps> = ({
+export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,

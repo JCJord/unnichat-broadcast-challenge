@@ -1,8 +1,10 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import { Eye, EyeOff } from 'lucide-react';
 
-export interface AppInputProps extends Omit<TextFieldProps, 'error'> {
+export interface InputProps extends Omit<TextFieldProps, 'error'> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -10,10 +12,11 @@ export interface AppInputProps extends Omit<TextFieldProps, 'error'> {
   rightIcon?: React.ReactNode;
 }
 
-export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
+export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       label,
+      type = 'text',
       error,
       helperText,
       leftIcon,
@@ -25,11 +28,43 @@ export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
     },
     ref,
   ) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const isPasswordType = type === 'password';
+    const computedType = isPasswordType ? (showPassword ? 'text' : 'password') : type;
     const hasError = Boolean(error);
+
+    const renderEndAdornment = () => {
+      if (isPasswordType) {
+        return (
+          <InputAdornment position="end">
+            <IconButton
+              size="small"
+              onClick={() => setShowPassword((prev) => !prev)}
+              edge="end"
+              className="!text-slate-400 hover:!text-white"
+              aria-label={showPassword ? 'Ocultar senha' : 'Ver senha'}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </IconButton>
+          </InputAdornment>
+        );
+      }
+
+      if (rightIcon) {
+        return (
+          <InputAdornment position="end" className="!text-slate-400">
+            {rightIcon}
+          </InputAdornment>
+        );
+      }
+
+      return undefined;
+    };
 
     return (
       <TextField
         inputRef={ref}
+        type={computedType}
         label={label}
         error={hasError}
         helperText={error || helperText}
@@ -45,11 +80,7 @@ export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
                 {leftIcon}
               </InputAdornment>
             ) : undefined,
-            endAdornment: rightIcon ? (
-              <InputAdornment position="end" className="!text-slate-400">
-                {rightIcon}
-              </InputAdornment>
-            ) : undefined,
+            endAdornment: renderEndAdornment(),
           },
         }}
         className={`
@@ -69,4 +100,4 @@ export const AppInput = forwardRef<HTMLInputElement, AppInputProps>(
   },
 );
 
-AppInput.displayName = 'AppInput';
+Input.displayName = 'Input';
