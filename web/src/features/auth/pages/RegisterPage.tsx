@@ -43,7 +43,7 @@ export const RegisterPage: React.FC = () => {
           <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-xs shadow-primary/20 mb-1">
             <Radio className="w-6 h-6 animate-pulse" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-text-primary tracking-tight">
             Criar conta
           </h1>
           <p className="text-xs sm:text-sm text-text-secondary">
@@ -52,7 +52,7 @@ export const RegisterPage: React.FC = () => {
         </div>
 
         {authError && (
-          <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-rose-400 text-xs animate-in fade-in duration-150">
+          <div className="p-3.5 rounded-xl bg-status-error/10 border border-status-error/30 flex items-start gap-2.5 text-status-error text-xs">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span className="leading-relaxed">{authError}</span>
           </div>

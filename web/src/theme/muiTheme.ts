@@ -1,46 +1,39 @@
 import { createTheme } from '@mui/material/styles';
 import { tokens } from './tokens';
 
+const { colors } = tokens;
+
 export const muiTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: tokens.colors.primary.main,
-      contrastText: tokens.colors.primary.contrastText,
+      main: colors.primary.DEFAULT,
+      contrastText: colors.primary.contrast,
     },
     background: {
-      default: tokens.colors.dark.bg,
-      paper: tokens.colors.dark.surface,
+      default: colors.dark.bg,
+      paper: colors.dark.surface,
     },
     text: {
-      primary: tokens.colors.text.primary,
-      secondary: tokens.colors.text.secondary,
+      primary: colors.text.primary,
+      secondary: colors.text.secondary,
     },
     success: {
-      main: tokens.colors.status.sent.main,
+      main: colors.status.sent,
     },
     warning: {
-      main: tokens.colors.status.warning.main,
+      main: colors.status.warning,
     },
     error: {
-      main: tokens.colors.status.error.main,
+      main: colors.status.error,
     },
-    divider: tokens.colors.dark.border,
+    divider: colors.dark.border,
   },
   shape: {
     borderRadius: 8,
   },
   typography: {
-    fontFamily: [
-      'Inter',
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-    ].join(','),
+    fontFamily: tokens.fontFamily.join(','),
     button: {
       textTransform: 'none',
       fontWeight: 600,
@@ -48,44 +41,23 @@ export const muiTheme = createTheme({
   },
   components: {
     MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          boxShadow: 'none',
-          '&:hover': {
-            boxShadow: 'none',
-          },
-        },
-        contained: {
-          backgroundColor: tokens.colors.primary.main,
-          color: tokens.colors.primary.contrastText,
-          '&:hover': {
-            backgroundColor: tokens.colors.primary.hover,
-          },
-        },
-        outlined: {
-          borderColor: tokens.colors.dark.borderLight,
-          color: tokens.colors.text.primary,
-          '&:hover': {
-            borderColor: tokens.colors.primary.main,
-            backgroundColor: tokens.colors.primary.subtle,
-          },
-        },
+      defaultProps: {
+        disableElevation: true,
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(5, 7, 7, 0.6)',
+          backgroundColor: colors.dark.bg,
           borderRadius: 8,
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: tokens.colors.dark.border,
+            borderColor: colors.dark.border,
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: tokens.colors.dark.borderLight,
+            borderColor: colors.dark['border-light'],
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: tokens.colors.primary.main,
+            borderColor: colors.primary.DEFAULT,
             borderWidth: 1.5,
           },
         },
@@ -95,17 +67,16 @@ export const muiTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          backgroundColor: tokens.colors.dark.surface,
-          borderColor: tokens.colors.dark.border,
+          backgroundColor: colors.dark.surface,
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: tokens.colors.dark.elevated,
-          border: `1px solid ${tokens.colors.dark.border}`,
-          borderRadius: 12,
+          backgroundColor: colors.dark.elevated,
+          border: `1px solid ${colors.dark.border}`,
+          borderRadius: 16,
         },
       },
     },

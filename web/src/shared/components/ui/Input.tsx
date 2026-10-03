@@ -30,8 +30,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPasswordType = type === 'password';
-    const computedType = isPasswordType ? (showPassword ? 'text' : 'password') : type;
-    const hasError = Boolean(error);
+    const computedType = isPasswordType && showPassword ? 'text' : type;
 
     const renderEndAdornment = () => {
       if (isPasswordType) {
@@ -41,7 +40,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               size="small"
               onClick={() => setShowPassword((prev) => !prev)}
               edge="end"
-              className="!text-slate-400 hover:!text-white"
+              className="text-text-secondary hover:text-text-primary"
               aria-label={showPassword ? 'Ocultar senha' : 'Ver senha'}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -52,7 +51,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
       if (rightIcon) {
         return (
-          <InputAdornment position="end" className="!text-slate-400">
+          <InputAdornment position="end" className="text-text-secondary">
             {rightIcon}
           </InputAdornment>
         );
@@ -66,7 +65,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         inputRef={ref}
         type={computedType}
         label={label}
-        error={hasError}
+        error={Boolean(error)}
         helperText={error || helperText}
         fullWidth={fullWidth}
         variant="outlined"
@@ -76,7 +75,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           input: {
             ...slotProps?.input,
             startAdornment: leftIcon ? (
-              <InputAdornment position="start" className="!text-slate-400">
+              <InputAdornment position="start" className="text-text-secondary">
                 {leftIcon}
               </InputAdornment>
             ) : undefined,
@@ -84,15 +83,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           },
         }}
         className={`
+          [&_.MuiOutlinedInput-input]:text-text-primary
+          [&_.MuiOutlinedInput-input]:text-sm
+          [&_.MuiInputLabel-root]:text-text-secondary
+          [&_.MuiInputLabel-root.Mui-focused]:text-primary
+          [&_.MuiFormHelperText-root]:text-xs
+          [&_.MuiFormHelperText-root.Mui-error]:text-status-error
           ${className}
-          [&_.MuiOutlinedInput-root]:!bg-[#070b0b]
-          [&_.MuiOutlinedInput-root]:!rounded-lg
-          [&_.MuiOutlinedInput-input]:!text-white
-          [&_.MuiOutlinedInput-input]:!text-sm
-          [&_.MuiInputLabel-root]:!text-slate-400
-          [&_.MuiInputLabel-root.Mui-focused]:!text-primary
-          [&_.MuiFormHelperText-root]:!text-xs
-          [&_.MuiFormHelperText-root.Mui-error]:!text-rose-400
         `}
         {...rest}
       />

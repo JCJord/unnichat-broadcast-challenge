@@ -1,7 +1,7 @@
 import React from 'react';
 import Chip from '@mui/material/Chip';
 
-export type BadgeVariant = 'scheduled' | 'sent' | 'error' | 'neutral';
+export type BadgeVariant = 'scheduled' | 'sent' | 'error' | 'neutral' | 'active';
 
 export interface BadgeProps {
   variant: BadgeVariant;
@@ -11,28 +11,18 @@ export interface BadgeProps {
 }
 
 const badgeStyles: Record<BadgeVariant, string> = {
-  scheduled: '!bg-primary/10 !text-primary !border !border-primary/30',
-  sent: '!bg-emerald-500/10 !text-emerald-400 !border !border-emerald-500/30',
-  error: '!bg-rose-500/10 !text-rose-400 !border !border-rose-500/30',
-  neutral: '!bg-slate-800 !text-slate-300 !border !border-slate-700',
+  scheduled: 'bg-status-scheduled/10 text-status-scheduled border border-status-scheduled/30',
+  sent: 'bg-status-sent/10 text-status-sent border border-status-sent/30',
+  active: 'bg-status-sent/10 text-status-sent border border-status-sent/30',
+  error: 'bg-status-error/10 text-status-error border border-status-error/30',
+  neutral: 'bg-dark-border text-text-secondary border border-dark-border-light',
 };
 
-export const Badge: React.FC<BadgeProps> = ({
-  variant,
-  children,
-  icon,
-  size = 'small',
-}) => {
-  return (
-    <Chip
-      size={size}
-      icon={icon}
-      label={children}
-      className={`
-        !font-medium !rounded-full
-        ${badgeStyles[variant]}
-        [&_.MuiChip-icon]:!text-current
-      `}
-    />
-  );
-};
+export const Badge: React.FC<BadgeProps> = ({ variant, children, icon, size = 'small' }) => (
+  <Chip
+    size={size}
+    icon={icon}
+    label={children}
+    className={`font-medium rounded-full [&_.MuiChip-icon]:text-current ${badgeStyles[variant]}`}
+  />
+);
