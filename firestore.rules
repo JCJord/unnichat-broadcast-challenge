@@ -13,20 +13,25 @@ service cloud.firestore {
 
     // 1. Connections collection (Root collection - No subcollections)
     match /connections/{connectionId} {
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      
-      allow create: if isAuthenticated()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.name is string
-        && request.resource.data.name.size() > 0;
-        
-      allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.name is string
-        && request.resource.data.name.size() > 0;
-        
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      function isValidConnectionName(name) {
+        return name is string && name.size() >= 2 && name.size() <= 50;
+      }
+
+      allow read: if isDocOwner(resource.data.userId);
+
+      allow create: if isDocOwner(request.resource.data.userId)
+        && request.resource.data.keys().hasAll(['userId', 'name', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['userId', 'name', 'createdAt', 'updatedAt'])
+        && isValidConnectionName(request.resource.data.name)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isDocOwner(resource.data.userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'updatedAt'])
+        && isValidConnectionName(request.resource.data.name)
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isDocOwner(resource.data.userId);
     }
 
     // 2. Contacts collection (Root collection - linked via connectionId & userId)
