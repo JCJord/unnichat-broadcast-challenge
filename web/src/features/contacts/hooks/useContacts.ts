@@ -5,6 +5,7 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  orderBy,
   query,
   serverTimestamp,
   updateDoc,
@@ -38,6 +39,7 @@ export const useContacts = (connectionId: string | null | undefined) => {
       contactsCollection,
       where('userId', '==', uid),
       where('connectionId', '==', connectionId),
+      orderBy('name', 'asc'),
     );
 
     return onSnapshot(
@@ -55,8 +57,6 @@ export const useContacts = (connectionId: string | null | undefined) => {
             updatedAt: data.updatedAt,
           };
         });
-
-        items.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }));
 
         setSnapshotState({ key, items, error: null });
       },
