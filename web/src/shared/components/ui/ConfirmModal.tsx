@@ -8,7 +8,6 @@ export type ConfirmModalTone = 'danger' | 'primary';
 export interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
-  /** Async action; the modal closes on success and shows `errorMessage` on failure. */
   onConfirm: () => Promise<void>;
   title: string;
   confirmLabel: string;

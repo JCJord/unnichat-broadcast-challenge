@@ -3,8 +3,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Radio, Plus, AlertCircle } from 'lucide-react';
 import { Connection } from '@/types';
 import { useActiveConnection } from '@/core/connections/useActiveConnection';
-import { Button } from '@/shared/components/ui';
-import { ConnectionCard, ConnectionModal, DeleteConnectionModal } from '../components';
+import { Button, ConfirmModal } from '@/shared/components/ui';
+import { ConnectionCard, ConnectionModal } from '../components';
 
 export const ConnectionsPage: React.FC = () => {
   const {
@@ -20,9 +20,21 @@ export const ConnectionsPage: React.FC = () => {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingConnection, setEditingConnection] = useState<Connection | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deletingConnection, setDeletingConnection] = useState<Connection | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const openCreateModal = () => setIsCreateModalOpen(true);
+
+  const openEditModal = (connection: Connection) => {
+    setEditingConnection(connection);
+    setIsEditModalOpen(true);
+  };
+
+  const openDeleteModal = (connection: Connection) => {
+    setDeletingConnection(connection);
+    setIsDeleteModalOpen(true);
+  };
 
   const renderContent = () => {
     if (loading) {
@@ -59,8 +71,8 @@ export const ConnectionsPage: React.FC = () => {
             connection={connection}
             isActive={activeConnection?.id === connection.id}
             onSelectActive={setActiveConnection}
-            onEdit={setEditingConnection}
-            onDelete={setDeletingConnection}
+            onEdit={openEditModal}
+            onDelete={openDeleteModal}
           />
         ))}
       </div>
@@ -107,22 +119,28 @@ export const ConnectionsPage: React.FC = () => {
       />
 
       <ConnectionModal
-        isOpen={Boolean(editingConnection)}
-        onClose={() => setEditingConnection(null)}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         initialData={editingConnection}
         onSubmit={async (name) => {
           if (editingConnection) await updateConnection(editingConnection.id, name);
         }}
       />
 
-      <DeleteConnectionModal
-        isOpen={Boolean(deletingConnection)}
-        onClose={() => setDeletingConnection(null)}
-        connectionName={deletingConnection?.name}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Excluir Conexão"
+        confirmLabel="Excluir Conexão"
+        errorMessage="Não foi possível excluir a conexão. Tente novamente."
         onConfirm={async () => {
           if (deletingConnection) await deleteConnection(deletingConnection.id);
         }}
-      />
+      >
+        Tem certeza que deseja excluir a conexão{' '}
+        <strong className="text-text-primary font-semibold">"{deletingConnection?.name}"</strong>?
+        Esta ação é permanente e não poderá ser desfeita.
+      </ConfirmModal>
     </div>
   );
 };
