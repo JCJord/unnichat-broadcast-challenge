@@ -121,6 +121,21 @@ export const BroadcastPage: React.FC = () => {
         </Button>
       </div>
 
+      <div className="p-4 bg-status-warning/10 border border-status-warning/30 rounded-xl text-sm flex flex-col sm:flex-row items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-status-warning shrink-0 mt-0.5" />
+        <div className="flex flex-col gap-1 text-text-secondary leading-relaxed">
+          <span className="font-semibold text-text-primary">
+            Atenção: Cloud Function não ativa na nuvem
+          </span>
+          <span>
+            As mensagens agendadas <strong className="text-text-primary font-medium">não mudarão de status automaticamente nesta versão web</strong>, pois a Cloud Function não foi implantada no Google Cloud (o plano Blaze exige pré-pagamento obrigatório de R$ 150,00).
+          </span>
+          <span className="text-xs text-text-muted mt-0.5">
+            A lógica foi 100% implementada em <code className="text-primary font-mono bg-dark-bg/60 px-1.5 py-0.5 rounded">/functions</code>. Para testar a Cloud Function mudando o status para "Enviada": <code className="text-text-primary font-mono bg-dark-bg px-2 py-0.5 rounded border border-dark-border">cd functions && npm install && npm test</code> (executa via emulador oficial do Firebase).
+          </span>
+        </div>
+      </div>
+
       {broadcastsError && (
         <div className="p-4 bg-status-error/10 border border-status-error/20 rounded-xl text-status-error text-sm flex items-center gap-3">
           <AlertCircle className="w-5 h-5 shrink-0" />

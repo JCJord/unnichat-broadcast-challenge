@@ -99,9 +99,9 @@ npm install
 npm run build
 ```
 
-Para emular as funções localmente:
+Para executar o teste automatizado no emulador oficial do Firebase:
 ```bash
-firebase emulators:start --only functions,firestore
+npm test
 ```
 
 ---
