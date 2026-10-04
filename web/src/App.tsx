@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline, StyledEngineProvider, GlobalStyles } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { ptBR } from 'date-fns/locale';
 import { muiTheme } from './theme/muiTheme';
 import { AuthProvider } from './core/auth/AuthProvider';
 import { ToastProvider } from './core/feedback';
@@ -19,7 +22,8 @@ export function App() {
       <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
       <ThemeProvider theme={muiTheme}>
         <CssBaseline />
-        <ToastProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
+          <ToastProvider>
           <AuthProvider>
             <BrowserRouter>
               <Routes>
@@ -47,6 +51,7 @@ export function App() {
             </BrowserRouter>
           </AuthProvider>
         </ToastProvider>
+        </LocalizationProvider>
       </ThemeProvider>
     </StyledEngineProvider>
   );
