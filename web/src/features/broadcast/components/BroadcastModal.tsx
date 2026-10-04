@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { Send, Clock } from 'lucide-react';
@@ -37,7 +37,6 @@ export const BroadcastModal: React.FC<BroadcastModalProps> = ({
     register,
     handleSubmit,
     control,
-    watch,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<BroadcastFormData>({
@@ -50,8 +49,8 @@ export const BroadcastModal: React.FC<BroadcastModalProps> = ({
     },
   });
 
-  const selectedMode = watch('mode');
-  const messageValue = watch('message') || '';
+  const selectedMode = useWatch({ control, name: 'mode' }) || 'now';
+  const messageValue = useWatch({ control, name: 'message' }) || '';
 
   useEffect(() => {
     if (isOpen) {
@@ -175,7 +174,7 @@ export const BroadcastModal: React.FC<BroadcastModalProps> = ({
                   label="Data e Hora do Disparo"
                   value={field.value}
                   onChange={field.onChange}
-                  minDateTime={new Date()}
+                  disablePast
                   slotProps={{
                     textField: {
                       size: 'small',

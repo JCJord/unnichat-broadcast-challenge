@@ -85,8 +85,6 @@ export const useConnections = () => {
   const deleteConnection = async (id: string): Promise<void> => {
     if (!uid) throw new Error('Usuário não autenticado.');
 
-    const batch = writeBatch(db);
-
     const contactsQuery = query(
       contactsCollection,
       where('userId', '==', uid),
@@ -104,17 +102,19 @@ export const useConnections = () => {
       getDocs(broadcastsQuery),
     ]);
 
-    contactsSnap.docs.forEach((contactDoc) => {
-      batch.delete(contactDoc.ref);
-    });
+    const allRefs = [
+      ...contactsSnap.docs.map((d) => d.ref),
+      ...broadcastsSnap.docs.map((d) => d.ref),
+      doc(db, 'connections', id),
+    ];
 
-    broadcastsSnap.docs.forEach((broadcastDoc) => {
-      batch.delete(broadcastDoc.ref);
-    });
-
-    batch.delete(doc(db, 'connections', id));
-
-    await batch.commit();
+    const CHUNK_SIZE = 450;
+    for (let i = 0; i < allRefs.length; i += CHUNK_SIZE) {
+      const chunk = allRefs.slice(i, i + CHUNK_SIZE);
+      const batch = writeBatch(db);
+      chunk.forEach((ref) => batch.delete(ref));
+      await batch.commit();
+    }
   };
 
   return {

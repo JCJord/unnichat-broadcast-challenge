@@ -36,16 +36,20 @@ export const processScheduledBroadcasts = onSchedule(
 
       logger.info(`Found ${snapshot.size} scheduled broadcasts ready to send.`);
 
-      const batch = db.batch();
-      snapshot.docs.forEach((doc) => {
-        batch.update(doc.ref, {
-          status: 'sent',
-          sentAt: now,
-          updatedAt: now,
+      const CHUNK_SIZE = 450;
+      for (let i = 0; i < snapshot.docs.length; i += CHUNK_SIZE) {
+        const chunk = snapshot.docs.slice(i, i + CHUNK_SIZE);
+        const batch = db.batch();
+        chunk.forEach((doc) => {
+          batch.update(doc.ref, {
+            status: 'sent',
+            sentAt: now,
+            updatedAt: now,
+          });
         });
-      });
+        await batch.commit();
+      }
 
-      await batch.commit();
       logger.info(`Successfully updated ${snapshot.size} broadcasts to 'sent'.`);
     } catch (error) {
       logger.error('Error processing scheduled broadcasts:', error);
