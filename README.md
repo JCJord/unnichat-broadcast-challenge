@@ -1,14 +1,8 @@
-# Unnichat Broadcast Challenge
+# Unnichat Broadcast
 
 Plataforma SaaS multi-tenant para gerenciamento de conexões, contatos e agendamento de mensagens em tempo real.
 
 Aplicação em Produção (Firebase Hosting): https://unnichat-broadcast-challenge.web.app
-
----
-
-## Visão Geral
-
-Projeto desenvolvido como resolução do desafio técnico para a Unnichat. A aplicação implementa o fluxo completo de envio de mensagens em massa (Broadcast), suportando disparos imediatos e agendados, com isolamento multi-tenant e sincronização em tempo real.
 
 ---
 
