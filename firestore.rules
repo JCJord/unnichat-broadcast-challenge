@@ -71,20 +71,53 @@ service cloud.firestore {
 
     // 3. Broadcasts collection (Root collection - linked via connectionId & userId)
     match /broadcasts/{broadcastId} {
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      
-      allow create: if isAuthenticated()
-        && request.resource.data.userId == request.auth.uid
+      function isValidMessage(msg) {
+        return msg is string && msg.size() >= 1 && msg.size() <= 1000;
+      }
+
+      function isConnectionOwner(connId) {
+        return get(/databases/$(database)/documents/connections/$(connId)).data.userId == request.auth.uid;
+      }
+
+      function isValidBroadcastStatus(status) {
+        return status in ['scheduled', 'sent'];
+      }
+
+      allow read: if isDocOwner(resource.data.userId);
+
+      allow create: if isDocOwner(request.resource.data.userId)
+        && request.resource.data.keys().hasAll([
+          'userId', 'connectionId', 'contactIds', 'recipientCount', 
+          'message', 'status', 'scheduledFor', 'sentAt', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'userId', 'connectionId', 'contactIds', 'recipientCount', 
+          'message', 'status', 'scheduledFor', 'sentAt', 'createdAt', 'updatedAt'
+        ])
         && request.resource.data.connectionId is string
-        && request.resource.data.message is string
-        && request.resource.data.message.size() > 0
-        && request.resource.data.status in ['scheduled', 'sent'];
-        
-      allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid;
-        
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+        && isConnectionOwner(request.resource.data.connectionId)
+        && isValidMessage(request.resource.data.message)
+        && request.resource.data.contactIds is list
+        && request.resource.data.contactIds.size() > 0
+        && request.resource.data.recipientCount is int
+        && request.resource.data.recipientCount == request.resource.data.contactIds.size()
+        && isValidBroadcastStatus(request.resource.data.status)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isDocOwner(resource.data.userId)
+        && resource.data.status == 'scheduled'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'message', 'contactIds', 'recipientCount', 'scheduledFor', 'status', 'sentAt', 'updatedAt'
+        ])
+        && isValidMessage(request.resource.data.message)
+        && request.resource.data.contactIds is list
+        && request.resource.data.contactIds.size() > 0
+        && request.resource.data.recipientCount is int
+        && request.resource.data.recipientCount == request.resource.data.contactIds.size()
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isDocOwner(resource.data.userId);
     }
 
     // Deny all other access by default
