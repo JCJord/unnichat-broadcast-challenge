@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Connection } from '@/types';
+import { useToast } from '@/core/feedback';
+import { parseAppError } from '@/core/errors';
 import { Modal, Input, Button } from '@/shared/components/ui';
 import { connectionSchema, ConnectionFormData } from '../schemas/connectionSchema';
 
@@ -18,7 +20,7 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
   onSubmit,
   initialData,
 }) => {
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const toast = useToast();
   const isEditing = Boolean(initialData);
 
   const {
@@ -35,25 +37,19 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
     if (isOpen) reset({ name: initialData?.name ?? '' });
   }, [isOpen, initialData, reset]);
 
-  const handleClose = () => {
-    setSubmitError(null);
-    onClose();
-  };
-
   const handleFormSubmit = async ({ name }: ConnectionFormData) => {
     try {
-      setSubmitError(null);
       await onSubmit(name);
-      handleClose();
-    } catch {
-      setSubmitError('Não foi possível salvar a conexão. Tente novamente.');
+      onClose();
+    } catch (err) {
+      toast.error(parseAppError(err, 'Não foi possível salvar a conexão. Tente novamente.'));
     }
   };
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onClose}
       title={isEditing ? 'Editar Conexão' : 'Nova Conexão'}
       description={
         isEditing
@@ -62,7 +58,7 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
       }
       footer={
         <>
-          <Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
+          <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
             Cancelar
           </Button>
           <Button type="submit" form="connection-form" isLoading={isSubmitting}>
@@ -76,11 +72,6 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex flex-col gap-y-4 pt-1"
       >
-        {submitError && (
-          <div className="p-3 text-xs text-status-error bg-status-error/10 border border-status-error/20 rounded-lg">
-            {submitError}
-          </div>
-        )}
 
         <Input
           label="Nome da Conexão"

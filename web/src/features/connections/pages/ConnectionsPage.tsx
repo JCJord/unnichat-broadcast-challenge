@@ -3,10 +3,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Radio, Plus, AlertCircle } from 'lucide-react';
 import { Connection } from '@/types';
 import { useActiveConnection } from '@/core/connections/useActiveConnection';
+import { useToast } from '@/core/feedback';
 import { Button, ConfirmModal } from '@/shared/components/ui';
 import { ConnectionCard, ConnectionModal } from '../components';
 
 export const ConnectionsPage: React.FC = () => {
+  const toast = useToast();
   const {
     connections,
     loading,
@@ -115,6 +117,7 @@ export const ConnectionsPage: React.FC = () => {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={async (name) => {
           await createConnection(name);
+          toast.success('Conexão criada com sucesso!');
         }}
       />
 
@@ -123,7 +126,10 @@ export const ConnectionsPage: React.FC = () => {
         onClose={() => setIsEditModalOpen(false)}
         initialData={editingConnection}
         onSubmit={async (name) => {
-          if (editingConnection) await updateConnection(editingConnection.id, name);
+          if (editingConnection) {
+            await updateConnection(editingConnection.id, name);
+            toast.success('Conexão atualizada com sucesso!');
+          }
         }}
       />
 
@@ -134,7 +140,10 @@ export const ConnectionsPage: React.FC = () => {
         confirmLabel="Excluir Conexão"
         errorMessage="Não foi possível excluir a conexão. Tente novamente."
         onConfirm={async () => {
-          if (deletingConnection) await deleteConnection(deletingConnection.id);
+          if (deletingConnection) {
+            await deleteConnection(deletingConnection.id);
+            toast.success('Conexão excluída com sucesso!');
+          }
         }}
       >
         Tem certeza que deseja excluir a conexão{' '}

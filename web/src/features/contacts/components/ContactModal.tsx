@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Contact } from '@/types';
+import { useToast } from '@/core/feedback';
+import { parseAppError } from '@/core/errors';
 import { Modal, Input, Button } from '@/shared/components/ui';
 import { contactSchema, ContactFormData } from '../schemas/contactSchema';
 import { formatPhone } from '../utils/phone';
@@ -19,7 +21,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
   onSubmit,
   initialData,
 }) => {
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const toast = useToast();
   const isEditing = Boolean(initialData);
 
   const {
@@ -44,11 +46,6 @@ export const ContactModal: React.FC<ContactModalProps> = ({
     }
   }, [isOpen, initialData, reset]);
 
-  const handleClose = () => {
-    setSubmitError(null);
-    onClose();
-  };
-
   const phoneRegistration = register('phone');
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,18 +55,17 @@ export const ContactModal: React.FC<ContactModalProps> = ({
 
   const handleFormSubmit = async (data: ContactFormData) => {
     try {
-      setSubmitError(null);
       await onSubmit(data);
-      handleClose();
-    } catch {
-      setSubmitError('Não foi possível salvar o contato. Tente novamente.');
+      onClose();
+    } catch (err) {
+      toast.error(parseAppError(err, 'Não foi possível salvar o contato. Tente novamente.'));
     }
   };
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onClose}
       title={isEditing ? 'Editar Contato' : 'Novo Contato'}
       description={
         isEditing
@@ -78,7 +74,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
       }
       footer={
         <>
-          <Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
+          <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
             Cancelar
           </Button>
           <Button type="submit" form="contact-form" isLoading={isSubmitting}>
@@ -92,11 +88,6 @@ export const ContactModal: React.FC<ContactModalProps> = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex flex-col gap-y-4 pt-1"
       >
-        {submitError && (
-          <div className="p-3 text-xs text-status-error bg-status-error/10 border border-status-error/20 rounded-lg">
-            {submitError}
-          </div>
-        )}
 
         <Input
           label="Nome Completo"

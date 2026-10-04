@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Info } from 'lucide-react';
+import { useToast } from '@/core/feedback';
+import { parseAppError } from '@/core/errors';
 import { Modal } from './Modal';
 import { Button } from './Button';
 
@@ -39,28 +41,26 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   errorMessage = 'Não foi possível concluir a ação. Tente novamente.',
   children,
 }) => {
+  const toast = useToast();
   const [isConfirming, setIsConfirming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const Icon = tone === 'danger' ? AlertTriangle : Info;
   const styles = toneStyles[tone];
 
   const handleClose = () => {
     if (isConfirming) return;
-    setError(null);
     onClose();
   };
 
   const handleConfirm = async () => {
     try {
       setIsConfirming(true);
-      setError(null);
       await onConfirm();
       setIsConfirming(false);
       onClose();
-    } catch {
-      setError(errorMessage);
+    } catch (err) {
       setIsConfirming(false);
+      toast.error(parseAppError(err, errorMessage));
     }
   };
 
@@ -87,12 +87,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       }
     >
       <div className="flex flex-col gap-4 pt-1">
-        {error && (
-          <div className="p-3 text-xs text-status-error bg-status-error/10 border border-status-error/20 rounded-lg">
-            {error}
-          </div>
-        )}
-
         <div
           className={`flex items-start gap-3 p-3.5 border rounded-xl text-text-secondary text-sm ${styles.box}`}
         >

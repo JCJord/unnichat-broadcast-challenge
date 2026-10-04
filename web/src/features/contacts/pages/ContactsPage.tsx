@@ -5,12 +5,14 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Users, Plus, Search, Radio, AlertCircle, UserPlus, X } from 'lucide-react';
 import { Contact } from '@/types';
 import { useActiveConnection } from '@/core/connections/useActiveConnection';
+import { useToast } from '@/core/feedback';
 import { Button, ConfirmModal, Input } from '@/shared/components/ui';
 import { useDebounce } from '@/shared/hooks';
 import { useContacts } from '../hooks/useContacts';
 import { ContactCard, ContactModal } from '../components';
 
 export const ContactsPage: React.FC = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const { activeConnection, loading: connectionLoading } = useActiveConnection();
   const {
@@ -190,6 +192,7 @@ export const ContactsPage: React.FC = () => {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={async (data) => {
           await createContact(data);
+          toast.success('Contato adicionado com sucesso!');
         }}
       />
 
@@ -200,6 +203,7 @@ export const ContactsPage: React.FC = () => {
         onSubmit={async (data) => {
           if (editingContact) {
             await updateContact(editingContact.id, data);
+            toast.success('Contato atualizado com sucesso!');
           }
         }}
       />
@@ -213,6 +217,7 @@ export const ContactsPage: React.FC = () => {
         onConfirm={async () => {
           if (deletingContact) {
             await deleteContact(deletingContact.id);
+            toast.success('Contato excluído com sucesso!');
           }
         }}
       >
