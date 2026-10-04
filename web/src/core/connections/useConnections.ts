@@ -2,20 +2,23 @@ import { useEffect, useState } from 'react';
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/core/auth/useAuth';
 import { Connection } from '@/types';
 
 const connectionsCollection = collection(db, 'connections');
+const contactsCollection = collection(db, 'contacts');
+const broadcastsCollection = collection(db, 'broadcasts');
 
 export const useConnections = () => {
   const { currentUser } = useAuth();
@@ -80,7 +83,38 @@ export const useConnections = () => {
   };
 
   const deleteConnection = async (id: string): Promise<void> => {
-    await deleteDoc(doc(db, 'connections', id));
+    if (!uid) throw new Error('Usuário não autenticado.');
+
+    const batch = writeBatch(db);
+
+    const contactsQuery = query(
+      contactsCollection,
+      where('userId', '==', uid),
+      where('connectionId', '==', id),
+    );
+
+    const broadcastsQuery = query(
+      broadcastsCollection,
+      where('userId', '==', uid),
+      where('connectionId', '==', id),
+    );
+
+    const [contactsSnap, broadcastsSnap] = await Promise.all([
+      getDocs(contactsQuery),
+      getDocs(broadcastsQuery),
+    ]);
+
+    contactsSnap.docs.forEach((contactDoc) => {
+      batch.delete(contactDoc.ref);
+    });
+
+    broadcastsSnap.docs.forEach((broadcastDoc) => {
+      batch.delete(broadcastDoc.ref);
+    });
+
+    batch.delete(doc(db, 'connections', id));
+
+    await batch.commit();
   };
 
   return {

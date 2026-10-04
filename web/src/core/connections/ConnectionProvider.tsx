@@ -20,6 +20,19 @@ export const ConnectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.setItem(ACTIVE_CONNECTION_KEY, connection.id);
   };
 
+  const handleDeleteConnection = async (id: string): Promise<void> => {
+    await deleteConnection(id);
+    if (selectedId === id) {
+      localStorage.removeItem(ACTIVE_CONNECTION_KEY);
+      const remaining = connections.filter((c) => c.id !== id);
+      const nextActiveId = remaining[0]?.id ?? null;
+      setSelectedId(nextActiveId);
+      if (nextActiveId) {
+        localStorage.setItem(ACTIVE_CONNECTION_KEY, nextActiveId);
+      }
+    }
+  };
+
   return (
     <ConnectionContext.Provider
       value={{
@@ -30,7 +43,7 @@ export const ConnectionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         error,
         createConnection,
         updateConnection,
-        deleteConnection,
+        deleteConnection: handleDeleteConnection,
       }}
     >
       {children}
