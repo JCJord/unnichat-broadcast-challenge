@@ -6,6 +6,16 @@ Aplicação em Produção (Firebase Hosting): https://unnichat-broadcast-challen
 
 ---
 
+> **Atenção: Execução da Cloud Function no Ambiente de Demonstração**  
+> As mensagens agendadas não mudarão de status automaticamente na versão web hospedada, pois a Cloud Function não foi implantada no Google Cloud (o plano Blaze exige pré-pagamento obrigatório de R$ 150,00).  
+> A lógica foi 100% implementada em `/functions`. Para testar a Cloud Function mudando o status para `sent`:  
+> ```bash
+> cd functions && npm install && npm test
+> ```  
+> O comando executa o teste de integração automatizado no emulador oficial do Firebase com saída de sucesso (exit code 0).
+
+---
+
 ## Arquitetura e Decisões de Engenharia
 
 ### 1. Modelagem Firestore sem Subcoleções (Root-Level Collections)
